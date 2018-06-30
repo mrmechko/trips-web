@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name="trips-web",
-        version='0.1',
+        version='0.2',
         description='Command-line interface for the TRIPS web parser',
         author="Rik Bose",
         author_email="rbose@cs.rochester.edu",

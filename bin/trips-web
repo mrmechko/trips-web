@@ -3,6 +3,7 @@
 import urllib.parse as uparse
 import urllib.request as urequest
 import argparse
+import json
 
 
 # 1.
@@ -23,6 +24,7 @@ def arguments():
     parser.add_argument('-p', '--penn-senses', metavar='POS', type=str, nargs=1, help="comma separated list of Penn tags that TextTagger output sense info for (default is all)")
     parser.add_argument('--component', type=str, nargs=1, help="run the parser or texttagger only", metavar="parser|texttagger")
     parser.add_argument('-c', '--config', type=str, nargs=1, help='a json config file describing the parse')
+    parser.add_argument('-d', '--dump', default=False, action="store_true", help="print a config file instead")
 
 
     return parser
@@ -36,10 +38,11 @@ def main():
     if args.config:
         # load from config if it exists
         parameters = config.load(open(args.config))
-    if args.input == "" and 'input' not in parameters:
+    if not args.dump and args.input == "" and 'input' not in parameters:
         print("error: please specify input either via cmdline or config file")
         return
-    parameters['input'] = args.input
+    else:
+        parameters['input'] = args.input
     if args.tag_type:
         parameters['tag-type'] = args.tag_type
     if args.input_terms:
@@ -50,6 +53,10 @@ def main():
         parameters['senses-only-for-penn-poss'] = args.penn_senses
     if args.skeleton_score:
         parameters['semantic-skeleton-scoring'] = True
+
+    if args.dump:
+        print(json.dumps(parameters))
+        return
 
     data = uparse.urlencode(parameters)
     data = data.encode('ascii')
