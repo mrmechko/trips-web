@@ -1,7 +1,7 @@
 trips-web
 =========
 
-Simple command-line `api <http://trips.ihmc.us/parser/api.html>` for the `TRIPS web parser <http://trips.ihmc.us/parser/cgi/parse>`
+Simple command-line `api <http://trips.ihmc.us/parser/api.html>`_ for the `TRIPS web parser <http://trips.ihmc.us/parser/cgi/parse>`_
 
 Installation:
 
