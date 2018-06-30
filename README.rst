@@ -1,7 +1,15 @@
 trips-web
 =========
 
-Installation: `pip install trips-web`.
+Simple command-line `api <http://trips.ihmc.us/parser/api.html>` for the `TRIPS web parser <http://trips.ihmc.us/parser/cgi/parse>`
+
+Installation:
+
+.. code-blok:: bash
+
+  git clone http://github.com/mrmechko/trips-web
+  cd trips-web
+  pip install .
 
 .. code-block:: bash
 
