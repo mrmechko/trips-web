@@ -3,8 +3,9 @@ trips-web
 
 Installation: `pip install trips-web`.
 
-`trips-web -h`
-`trips-web "This is a test sentence." > parse.xml`
+::
+trips-web -h
+trips-web "This is a test sentence." > parse.xml
 
 config.json
 ===========
