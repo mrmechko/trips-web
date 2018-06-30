@@ -5,7 +5,7 @@ Simple command-line `api <http://trips.ihmc.us/parser/api.html>`_ for the `TRIPS
 
 Installation:
 
-.. code-blok:: bash
+.. code-block:: bash
 
   git clone http://github.com/mrmechko/trips-web
   cd trips-web
