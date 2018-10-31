@@ -7,7 +7,7 @@ import json
 
 
 # 1.
-TRIPS_URL="http://trips.ihmc.us/parser/cgi/parse"
+TRIPS_URL="http://trips.ihmc.us/parser/cgi/step"
 
 def arguments():
     parser = argparse.ArgumentParser(description='Query the trips webparser')
