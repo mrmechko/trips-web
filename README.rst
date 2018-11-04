@@ -14,7 +14,7 @@ Installation:
 .. code-block:: bash
 
   trips-web -h
-  trips-web "This is a test sentence." > parse.xml
+  trips-web "This is a test sentence." > parse.json
 
 
 config.json
