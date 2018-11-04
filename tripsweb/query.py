@@ -4,10 +4,11 @@ import urllib.parse as uparse
 import urllib.request as urequest
 import argparse
 import json
+import .process
 
 
 # 1.
-TRIPS_URL="http://trips.ihmc.us/parser/cgi/parse"
+TRIPS_URL="http://trips.ihmc.us/parser/cgi/step"
 
 def arguments():
     parser = argparse.ArgumentParser(description='Query the trips webparser')
@@ -25,6 +26,7 @@ def arguments():
     parser.add_argument('--component', type=str, nargs=1, help="run the parser or texttagger only", metavar="parser|texttagger")
     parser.add_argument('-c', '--config', type=str, nargs=1, help='a json config file describing the parse')
     parser.add_argument('-d', '--dump', default=False, action="store_true", help="print a config file instead")
+    parser.add_argument('-x', '--xml', default=False, action="store_true", help="dump the parse as xml instead of json")
 
 
     return parser
@@ -62,6 +64,10 @@ def main():
     data = data.encode('ascii')
     req = urequest.Request(url, data=data, method="POST")
     with urequest.urlopen(req) as response:
-        print(response.read())
+        result = response.read().decode("utf-8")
+        if args.xml:
+            print(result)
+        else:
+            print(process.read(result))
 
 main()

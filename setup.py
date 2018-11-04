@@ -8,9 +8,12 @@ setup(name="trips-web",
         author="Rik Bose",
         author_email="rbose@cs.rochester.edu",
         url="http://www.github.com/mrmechko/trips-web",
-        scripts=['bin/trips-web'],
+        entry_points = {
+            "console-scripts": ['trips-web=tripsweb.query:main'],
+        }
         install_requires=[
-            'argparse'
+            'argparse',
+            'xmltosdict'
         ],
         license="MIT"
    )
