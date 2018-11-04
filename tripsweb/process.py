@@ -39,4 +39,4 @@ def as_json(utt):
 
 def read(stream):
     terms = find_terms(stream)
-    return json.dumps([as_json(t) for t in terms])
+    return json.dumps([as_json(t) for t in terms], indent=2)

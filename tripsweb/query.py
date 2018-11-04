@@ -4,7 +4,6 @@ import urllib.parse as uparse
 import urllib.request as urequest
 import argparse
 import json
-import pprint
 from . import process
 
 
@@ -42,8 +41,7 @@ def main():
         # load from config if it exists
         parameters = config.load(open(args.config))
     if not args.dump and args.input == "" and 'input' not in parameters:
-        print("error: please specify input either via cmdline or config file")
-        return
+        return "error: please specify input either via cmdline or config file"
     else:
         parameters['input'] = args.input
     if args.tag_type:
@@ -58,8 +56,7 @@ def main():
         parameters['semantic-skeleton-scoring'] = True
 
     if args.dump:
-        print(json.dumps(parameters))
-        return
+        return json.dumps(parameters)
 
     data = uparse.urlencode(parameters)
     data = data.encode('ascii')
@@ -67,8 +64,8 @@ def main():
     with urequest.urlopen(req) as response:
         result = response.read().decode("utf-8")
         if args.xml:
-            return pprint.pformat(result)
+            return result
         else:
-            return pprint.pformat(process.read(result))
+            return process.read(result)
 
 main()
