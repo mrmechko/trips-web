@@ -4,7 +4,8 @@ import urllib.parse as uparse
 import urllib.request as urequest
 import argparse
 import json
-import .process
+import pprint
+from . import process
 
 
 # 1.
@@ -66,8 +67,8 @@ def main():
     with urequest.urlopen(req) as response:
         result = response.read().decode("utf-8")
         if args.xml:
-            print(result)
+            return pprint.pformat(result)
         else:
-            print(process.read(result))
+            return pprint.pformat(process.read(result))
 
 main()
