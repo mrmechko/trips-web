@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import urllib.parse as uparse
 import urllib.request as urequest
 import argparse
@@ -41,7 +42,8 @@ def main():
         # load from config if it exists
         parameters = config.load(open(args.config))
     if not args.dump and args.input == "" and 'input' not in parameters:
-        return "error: please specify input either via cmdline or config file"
+        print("error: please specify input either via cmdline or config file", file=sys.stderr)
+        return -1
     else:
         parameters['input'] = args.input
     if args.tag_type:
@@ -56,7 +58,8 @@ def main():
         parameters['semantic-skeleton-scoring'] = True
 
     if args.dump:
-        return json.dumps(parameters)
+        print(json.dumps(parameters))
+        return 0
 
     data = uparse.urlencode(parameters)
     data = data.encode('ascii')
@@ -64,8 +67,10 @@ def main():
     with urequest.urlopen(req) as response:
         result = response.read().decode("utf-8")
         if args.xml:
-            return result
+            print(result)
+            return 0
         else:
-            return process.read(result)
+            print(process.read(result))
+            return 0
 
 main()
