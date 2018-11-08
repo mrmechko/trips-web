@@ -4,7 +4,7 @@ from setuptools import setup, findpackages
 
 setup(name="trips-web",
         version='1.0.1',
-        name='tripsweb'
+        name='tripsweb',
         description='Command-line interface for the TRIPS web parser',
         author="Rik Bose",
         author_email="rbose@cs.rochester.edu",
