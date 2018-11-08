@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup, findpackages
+from setuptools import setup, find_packages
 
 setup(name="trips-web",
         version='1.0.3',
