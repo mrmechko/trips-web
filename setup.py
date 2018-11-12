@@ -16,6 +16,7 @@ setup(name="trips-web",
             'argparse',
             'xmltodict'
         ],
-        license="MIT"
+        license="MIT",
+        python_requires=">3.0"
    )
 
