@@ -14,21 +14,19 @@ TRIPS_URL="http://trips.ihmc.us/parser/cgi/step"
 def arguments():
     parser = argparse.ArgumentParser(description='Query the trips webparser')
 
-    parser.add_argument('input', type=str, nargs=1, help='the text to be parsed', default="")
-
-
+    parser.add_argument('input', type=str, nargs="?", help='the text to be parsed', default="")
     parser.add_argument('-s', '--skeleton-score', default=False, help='use skeleton score module', action='store_true')
     parser.add_argument('--tag-type', type=str, metavar='P', nargs='+', help='tag-type hints for the parser.  See online documents for further information')
-    parser.add_argument('-u', '--parser-url', type=str, metavar='P', nargs=1, help='the URL of the parser to be used.', default=TRIPS_URL)
+    parser.add_argument('-u', '--parser-url', type=str, metavar='P', help='the URL of the parser to be used.', default=TRIPS_URL)
 
-    parser.add_argument('-t', '--input-terms', metavar='T', type=str, nargs='1', help='file containing input-terms.  See make-input-terms --help for more details.')
+    parser.add_argument('-t', '--input-terms', metavar='T', type=str, help='file containing input-terms.  See make-input-terms --help for more details.')
 
-    parser.add_argument('-n', '--no-sense', metavar='W', type=str, nargs=1, help="comma separated list of words that text-tagger will delegate to the trips lexicon for sense information")
-    parser.add_argument('-p', '--penn-senses', metavar='POS', type=str, nargs=1, help="comma separated list of Penn tags that TextTagger output sense info for (default is all)")
-    parser.add_argument('--component', type=str, nargs=1, help="run the parser or texttagger only", metavar="parser|texttagger")
+    parser.add_argument('-n', '--no-sense', metavar='W', type=str, help="comma separated list of words that text-tagger will delegate to the trips lexicon for sense information")
+    parser.add_argument('-p', '--penn-senses', metavar='POS', type=str, help="comma separated list of Penn tags that TextTagger output sense info for (default is all)")
+    parser.add_argument('--component', type=str, help="run the parser or texttagger only", metavar="parser|texttagger")
 
     # these params don't go to the json.
-    parser.add_argument('-c', '--config', type=str, nargs=1, help='a json config file describing the parse')
+    parser.add_argument('-c', '--config', type=str, help='a json config file describing the parse')
     parser.add_argument('-d', '--dump', default=False, action="store_true", help="print a config file instead")
     parser.add_argument('-x', '--xml', default=False, action="store_true", help="dump the parse as xml instead of json")
     parser.add_argument('-v', '--verbose', default=False, help="print debug output to stderr", action='store_true')
@@ -45,7 +43,7 @@ def get_input_terms(fname):
         if is_list and not type(entry) is list:
             entry = [entry]
         if type(entry) is not list:
-            return str(entry)
+            return '"{}"'.format(str(entry))
         return "({})".format(" ".join([str(e) for e in entry]))
 
     def process(term):
@@ -53,15 +51,17 @@ def get_input_terms(fname):
         :lex str
         :wn-sense-keys list
         :penn-pos list
-        :lftypes list
+        :lftype list
         :penn-cat list(?)
         """
         key, val = term
-        as_list = key in ["wn_sense_keys", "penn_pos", "lftypes", "penn_cat"]
-        return " ".join(":"+key.replace("_", "-"), proc_entry(val, as_list)]
+        if not val:
+            return ""
+        as_list = key in ["wn_sense_keys", "penn_pos", "lftype", "penn_cat"]
+        return " ".join((":"+key.replace("_", "-"), proc_entry(val, as_list)))
 
     res = ["(sense {})".format(" ".join([process(t) for t in term.items()])) for term in iterms]
-    return "({})".join(res)
+    return "({})".format(" ".join(res))
 
 
 
@@ -77,13 +77,12 @@ def main():
     if not args.dump and args.input == "" and 'input' not in parameters:
         print("error: please specify input either via cmdline or config file", file=sys.stderr)
         return -1
-    else: 
+    elif 'input' not in parameters: 
         parameters['input'] = args.input
     if args.tag_type:
         tag_type.update(args.tag_type)
     if args.input_terms:
         parameters['input-terms'] = get_input_terms(args.input_terms)
-        tag_type.add("terms-input")
     if args.no_sense:
         parameters['no-sense-words'] = args.no_sense
     if args.penn_senses:
@@ -91,9 +90,12 @@ def main():
     if args.skeleton_score:
         parameters['semantic-skeleton-scoring'] = True
 
+    if 'input-terms' in parameters:
+        tag_type.add("terms-input")
+
     if tag_type:
         tag_type.add("default")
-        parameters['tag-type'] = "(or" + " ".join(tag_type) + ")"
+        parameters['tag-type'] = "(or " + " ".join(tag_type) + ")"
 
     if args.dump:
         print(json.dumps(parameters))
