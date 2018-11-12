@@ -63,8 +63,7 @@ def main():
 
     data = uparse.urlencode(parameters)
     data = data.encode('ascii')
-    req = urequest.Request(url, data=data, method="POST")
-    with urequest.urlopen(req) as response:
+    with urequest.urlopen(url, data) as response:
         result = response.read().decode("utf-8")
         if args.xml:
             print(result)
@@ -73,4 +72,3 @@ def main():
             print(process.read(result))
             return 0
 
-main()
