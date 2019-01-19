@@ -10,7 +10,7 @@ setup(name="trips-web",
         url="http://www.github.com/mrmechko/trips-web",
         packages=find_packages(),
         entry_points = {
-            "console_scripts": ['trips-web=tripsweb.query:main'],
+            "console_scripts": ['trips-web=tripsweb.query:main', 'make-input-terms=tripsweb.inputterms:main'],
         },
         install_requires=[
             'argparse',

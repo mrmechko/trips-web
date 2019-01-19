@@ -20,22 +20,21 @@ def get_roles(term):
     return {x.split(":")[-1] : val_or_ref(y) for x, y in term.items() if x.startswith("role:")}
 
 def as_json(utt):
-    try:
-        terms = utt["terms"]["rdf:RDF"]["rdf:Description"]
-        root = terms[0]["@rdf:ID"]
-        result = {n["@rdf:ID"]: {
-            "id": n.get("@rdf:ID", None),
-            "indicator":n.get("LF:indicator", None),
-            "type": n.get("LF:type", None),
-            "word": n.get("LF:word", None),
-            "roles":get_roles(n),
-            "start": int(n.get("LF:start", -1)),
-            "end": int(n.get("LF:end", -1))
-            } for n in terms}
-        result["root"] = root
-        return result
-    except Error:
-        return {}
+    if type(utt) is list:
+        return [as_json(u) for u in utt]
+    terms = utt["terms"]["rdf:RDF"]["rdf:Description"]
+    root = terms[0]["@rdf:ID"]
+    result = {n["@rdf:ID"]: {
+        "id": n.get("@rdf:ID", None),
+        "indicator":n.get("LF:indicator", None),
+        "type": n.get("LF:type", None),
+        "word": n.get("LF:word", None),
+        "roles":get_roles(n),
+        "start": int(n.get("LF:start", -1)),
+        "end": int(n.get("LF:end", -1))
+        } for n in terms}
+    result["root"] = root
+    return result
 
 def read(stream):
     terms = find_terms(stream)
