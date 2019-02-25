@@ -22,6 +22,7 @@ def arguments():
     parser.add_argument('-p', '--penn-pos', type=str, metavar="P", nargs='+', help="parts of speech (Penn tags)", default=[])
     parser.add_argument("-o", '--lftype', type=str, metavar="ont::T", nargs='+', help="ontology types (prefixed with 'ont::'", default=[])
     parser.add_argument("-c", '--penn-cat', type=str, metavar="C", nargs='+', help="penn cats", default=[])
+    parser.add_argument("-s", '--score', type=float, metavar="S", help="score for entry", default=-1)
     return parser
 
 def _check_percent(w):
@@ -30,7 +31,7 @@ def _check_percent(w):
     return w
 
 
-def make_input_terms(lex, wn_sense_keys=[], penn_pos=[], lftype=[], penn_cat=[], insert=None):
+def make_input_terms(lex, wn_sense_keys=[], penn_pos=[], lftype=[], penn_cat=[], score=-1, insert=None):
     res = {
             "lex": lex,
             "wn_sense_keys": ['"{}"'.format(_check_percent(w)) for w in wn_sense_keys],
@@ -38,6 +39,8 @@ def make_input_terms(lex, wn_sense_keys=[], penn_pos=[], lftype=[], penn_cat=[],
             "lftype": ["ont::"+x.split("ont::")[-1] for x in lftype],
             "penn_cat": penn_cat
         }
+    if score >= 0:
+        res['score'] = score
     if not insert:
         return [res]
     if type(insert) is list:
@@ -72,7 +75,7 @@ def main():
     if infile:
         insert = json.load(open(infile))
 
-    result = make_input_terms(args.lex, args.wn_sense_keys, args.penn_pos, args.lftype, args.penn_cat, insert)
+    result = make_input_terms(args.lex, args.wn_sense_keys, args.penn_pos, args.lftype, args.penn_cat, args.score, insert)
 
     if outfile:
         if os.path.isfile(outfile) and not force:
