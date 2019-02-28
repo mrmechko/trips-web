@@ -107,6 +107,31 @@ def main():
     print(result)
     return code
 
+param_list = ["input", "input-terms", "no-sense-words", "senses-only-for-penn-poss", "semantic-skeleton-scoring", "tag-type"]
+
+def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False):
+    if not url:
+        url = TRIPS_URL
+    params = {}
+    params["input"] = input_
+    params['tag-type'] = "(or default input)"
+    params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
+    return get_parse(url, params, as_xml=as_xml, verbose=verbose)
+
+class InputTag:
+    def __init__(self, lex, start, end, lftype, score):
+        self.lex = lex
+        self.start = start
+        self.end = end
+        self.lftype = lftype
+        self.score = score
+
+    def __str__(self):
+        return '(SENSE :LEX "{}" :START {} :END {} :LFTYPE ({}) :SCORE {} :DOMAIN-SPECIFIC-INFO (TERM :ID BOGUS))'.format(
+                self.lex, self.start, self.end, self.lftype, self.score
+        )
+
+
 def get_parse(url, parameters, as_xml, verbose, return_response=False):
     if verbose:
         print("parameters:\n", parameters, file=sys.stderr)

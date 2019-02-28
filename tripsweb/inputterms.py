@@ -20,7 +20,7 @@ def arguments():
     parser.add_argument('-l', '--lex', type=str, metavar='L', help='the word you want to hint')
     parser.add_argument('-w', '--wn-sense-keys', type=str, metavar="W", nargs='+', help="WordNet senses associated", default=[])
     parser.add_argument('-p', '--penn-pos', type=str, metavar="P", nargs='+', help="parts of speech (Penn tags)", default=[])
-    parser.add_argument("-o", '--lftype', type=str, metavar="ont::T", nargs='+', help="ontology types (prefixed with 'ont::'", default=[])
+    parser.add_argument("-o", '--lftype', type=str, metavar="ont::T", nargs='+', help="ontology types (prefixed with 'ont::')", default=[])
     parser.add_argument("-c", '--penn-cat', type=str, metavar="C", nargs='+', help="penn cats", default=[])
     parser.add_argument("-s", '--score', type=float, metavar="S", help="score for entry", default=-1)
     return parser
