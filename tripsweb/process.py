@@ -14,6 +14,8 @@ def find_terms(stream):
 def val_or_ref(y):
     if type(y) is OrderedDict:
         return y.get("@rdf:resource", None)
+    elif type(y) is list:
+        return [val_or_ref(x) for x in y]
     return y
 
 def get_roles(term):
@@ -23,7 +25,10 @@ def as_json(utt):
     if type(utt) is list:
         return [as_json(u) for u in utt]
     terms = utt["terms"]["rdf:RDF"]["rdf:Description"]
-    root = terms[0]["@rdf:ID"]
+    root = utt["terms"]["@root"] #terms[0]["@rdf:ID"]
+    if type(terms) is OrderedDict:
+        terms = [terms]
+    # print(terms)
     result = {n["@rdf:ID"]: {
         "id": n.get("@rdf:ID", None),
         "indicator":n.get("LF:indicator", None),

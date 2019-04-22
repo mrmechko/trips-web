@@ -77,7 +77,7 @@ def main():
     if not args.dump and args.input == "" and 'input' not in parameters:
         print("error: please specify input either via cmdline or config file", file=sys.stderr)
         return -1
-    elif 'input' not in parameters: 
+    elif 'input' not in parameters:
         parameters['input'] = args.input
     if args.tag_type:
         tag_type.update(args.tag_type)
@@ -116,7 +116,9 @@ def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False):
     params["input"] = input_
     params['tag-type'] = "(or default input)"
     params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
-    return get_parse(url, params, as_xml=as_xml, verbose=verbose)
+    if as_xml:
+        return get_parse(url, params, as_xml=as_xml, verbose=verbose)[0]
+    return json.loads(get_parse(url, params, as_xml=as_xml, verbose=verbose)[0])
 
 class InputTag:
     def __init__(self, lex, start, end, lftype, score):
@@ -135,6 +137,8 @@ class InputTag:
 def get_parse(url, parameters, as_xml, verbose, return_response=False):
     if verbose:
         print("parameters:\n", parameters, file=sys.stderr)
+    # parameters['input'] = uparse.quote(parameters['input']) # double encode the sentence?
+    # nope: need some kinda special encoding, apparently
     data = uparse.urlencode(parameters)
     if verbose:
         print("data:\n", data, file=sys.stderr)
@@ -154,4 +158,3 @@ def get_parse(url, parameters, as_xml, verbose, return_response=False):
             return result, 0
         else:
             return process.read(result), 0
-
