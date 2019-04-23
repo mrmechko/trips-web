@@ -23,23 +23,26 @@ def get_roles(term):
 
 def as_json(utt):
     if type(utt) is list:
-        return [as_json(u) for u in utt]
-    terms = utt["terms"]["rdf:RDF"]["rdf:Description"]
-    root = utt["terms"]["@root"] #terms[0]["@rdf:ID"]
-    if type(terms) is OrderedDict:
-        terms = [terms]
-    # print(terms)
-    result = {n["@rdf:ID"]: {
-        "id": n.get("@rdf:ID", None),
-        "indicator":n.get("LF:indicator", None),
-        "type": n.get("LF:type", None),
-        "word": n.get("LF:word", None),
-        "roles":get_roles(n),
-        "start": int(n.get("LF:start", -1)),
-        "end": int(n.get("LF:end", -1))
-        } for n in terms}
-    result["root"] = root
-    return result
+        return [x for x in [as_json(u) for u in utt] if x]
+    try:
+        terms = utt["terms"]["rdf:RDF"]["rdf:Description"]
+        root = utt["terms"]["@root"] #terms[0]["@rdf:ID"]
+        if type(terms) is OrderedDict:
+            terms = [terms]
+        # print(terms)
+        result = {n["@rdf:ID"]: {
+            "id": n.get("@rdf:ID", None),
+            "indicator":n.get("LF:indicator", None),
+            "type": n.get("LF:type", None),
+            "word": n.get("LF:word", None),
+            "roles":get_roles(n),
+            "start": int(n.get("LF:start", -1)),
+            "end": int(n.get("LF:end", -1))
+            } for n in terms}
+        result["root"] = root
+        return result
+    except:
+        return None
 
 def read(stream):
     terms = find_terms(stream)
