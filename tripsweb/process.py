@@ -5,10 +5,12 @@ from collections import namedtuple, OrderedDict
 
 def find_terms(stream):
     js = xmltodict.parse(stream)['trips-parser-output']
+    inputtags = js["@input-tags"]
+    debug = js["debug"]
     if 'compound-communication-act' in js:
-        return js['compound-communication-act']['utt']
+        return js['compound-communication-act']['utt'], inputtags, debug
     else:
-        return [js['utt']]
+        return [js['utt']], inputtags, debug
 
 
 def val_or_ref(y):
@@ -44,6 +46,9 @@ def as_json(utt):
     except:
         return None
 
-def read(stream):
-    terms = find_terms(stream)
-    return json.dumps([as_json(t) for t in terms], indent=2)
+def read(stream, debug=False):
+    terms, inputtags, debug = find_terms(stream)
+    res = [as_json(t) for t in terms]
+    if debug:
+        return json.dumps({"parse": res, "inputtags": inputtags, "debug": debug.split("\n")}, indent=2)
+    return json.dumps(res, indent=2)

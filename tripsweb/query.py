@@ -88,7 +88,7 @@ def main():
     if args.penn_senses:
         parameters['senses-only-for-penn-poss'] = args.penn_senses
     if args.skeleton_score:
-        parameters['semantic-skeleton-scoring'] = True
+        parameters['semantic-skeleton-scoring'] = "on"
 
     if 'input-terms' in parameters:
         tag_type.add("terms-input")
@@ -109,7 +109,7 @@ def main():
 
 param_list = ["input", "input-terms", "no-sense-words", "senses-only-for-penn-poss", "semantic-skeleton-scoring", "tag-type"]
 
-def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False):
+def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False, debug=False):
     if not url:
         url = TRIPS_URL
     params = {}
@@ -118,7 +118,7 @@ def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False):
     params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
     if as_xml:
         return get_parse(url, params, as_xml=as_xml, verbose=verbose)[0]
-    return json.loads(get_parse(url, params, as_xml=as_xml, verbose=verbose)[0])
+    return json.loads(get_parse(url, params, as_xml=as_xml, verbose=verbose, debug=debug)[0])
 
 class InputTag:
     def __init__(self, lex, start, end, lftype, score):
@@ -134,7 +134,7 @@ class InputTag:
         )
 
 
-def get_parse(url, parameters, as_xml, verbose, return_response=False):
+def get_parse(url, parameters, as_xml, verbose, return_response=False, debug=False):
     if verbose:
         print("parameters:\n", parameters, file=sys.stderr)
     # parameters['input'] = uparse.quote(parameters['input']) # double encode the sentence?
@@ -157,4 +157,4 @@ def get_parse(url, parameters, as_xml, verbose, return_response=False):
         if as_xml:
             return result, 0
         else:
-            return process.read(result), 0
+            return process.read(result, debug), 0
