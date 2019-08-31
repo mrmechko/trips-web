@@ -5,7 +5,7 @@ from collections import namedtuple, OrderedDict
 
 def find_terms(stream):
     js = xmltodict.parse(stream)['trips-parser-output']
-    inputtags = js["@input-tags"]
+    inputtags = js.get("@input-tags", [])
     debug = js["debug"]
     if 'compound-communication-act' in js:
         return js['compound-communication-act']['utt'], inputtags, debug

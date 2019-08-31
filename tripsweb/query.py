@@ -114,8 +114,9 @@ def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False, debug=False):
         url = TRIPS_URL
     params = {}
     params["input"] = input_
-    params['tag-type'] = "(or default input)"
-    params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
+    if tags:
+        params['tag-type'] = "(or default input)"
+        params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
     if as_xml:
         return get_parse(url, params, as_xml=as_xml, verbose=verbose)[0]
     return json.loads(get_parse(url, params, as_xml=as_xml, verbose=verbose, debug=debug)[0])
@@ -128,7 +129,12 @@ class InputTag:
         self.lftype = lftype
         self.score = score
 
+    def _ensure_prefix(self):
+        if not self.lftype.lower().startswith("ont::"):
+            self.lftype = "ont::"+self.lftype
+
     def __str__(self):
+        self._ensure_prefix()
         return '(SENSE :LEX "{}" :START {} :END {} :LFTYPE ({}) :SCORE {} :DOMAIN-SPECIFIC-INFO (TERM :ID BOGUS))'.format(
                 self.lex, self.start, self.end, self.lftype, self.score
         )
@@ -158,3 +164,4 @@ def get_parse(url, parameters, as_xml, verbose, return_response=False, debug=Fal
             return result, 0
         else:
             return process.read(result, debug), 0
+
