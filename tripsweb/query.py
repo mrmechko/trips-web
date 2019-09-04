@@ -6,6 +6,7 @@ import urllib.request as urequest
 import argparse
 import json
 from tripsweb import process
+import pprint
 
 
 # 1.
@@ -118,7 +119,9 @@ def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False, debug=False):
         params['tag-type'] = "(or default input)"
         params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
     if as_xml:
-        return get_parse(url, params, as_xml=as_xml, verbose=verbose)[0]
+        res = get_parse(url, params, as_xml=as_xml, verbose=verbose, debug=debug)[0]
+        pprint.pprint(res)
+        return res
     return json.loads(get_parse(url, params, as_xml=as_xml, verbose=verbose, debug=debug)[0])
 
 class InputTag:

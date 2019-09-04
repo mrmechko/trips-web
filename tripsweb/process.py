@@ -3,14 +3,22 @@ from collections import namedtuple, OrderedDict
 
 # @rdf:ID, LF:indicator, LF:type, role:*, LF:start, LF:end
 
+def find_utts(dct):
+    utts = []
+    for k, v in dct.items():
+        if k.lower() == "utt":
+            utts += [v]
+        elif isinstance(v, dict):
+            utts += find_utts(v)
+        elif type(v) is list:
+            utts += [find_utts(x) for x in v]
+    return utts
+
 def find_terms(stream):
-    js = xmltodict.parse(stream)['trips-parser-output']
-    inputtags = js.get("@input-tags", [])
-    debug = js["debug"]
-    if 'compound-communication-act' in js:
-        return js['compound-communication-act']['utt'], inputtags, debug
-    else:
-        return [js['utt']], inputtags, debug
+    js = xmltodict.parse(stream)
+    inputtags = js['trips-parser-output'].get("@input-tags", [])
+    debug = js['trips-parser-output']["debug"]
+    return find_utts(js), inputtags, debug
 
 
 def val_or_ref(y):
@@ -31,7 +39,6 @@ def as_json(utt):
         root = utt["terms"]["@root"] #terms[0]["@rdf:ID"]
         if type(terms) is OrderedDict:
             terms = [terms]
-        # print(terms)
         result = {n["@rdf:ID"]: {
             "id": n.get("@rdf:ID", None),
             "indicator":n.get("LF:indicator", None),
