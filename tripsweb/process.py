@@ -53,9 +53,15 @@ def as_json(utt):
     except:
         return None
 
+def _flat(x):
+    if isinstance(x, list):
+        return sum([_flat(y) for y in x], [])
+    else:
+        return [x]
+
 def read(stream, debug=False):
     terms, inputtags, debug = find_terms(stream)
     res = [as_json(t) for t in terms]
     if debug:
-        return json.dumps({"parse": res, "inputtags": inputtags, "debug": debug.split("\n")}, indent=2)
+        return json.dumps({"parse": _flat(res), "inputtags": inputtags, "debug": debug.split("\n")}, indent=2)
     return json.dumps(res, indent=2)
