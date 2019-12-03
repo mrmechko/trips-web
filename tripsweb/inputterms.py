@@ -23,6 +23,8 @@ def arguments():
     parser.add_argument("-o", '--lftype', type=str, metavar="ont::T", nargs='+', help="ontology types (prefixed with 'ont::')", default=[])
     parser.add_argument("-c", '--penn-cat', type=str, metavar="C", nargs='+', help="penn cats", default=[])
     parser.add_argument("-s", '--score', type=float, metavar="S", help="score for entry", default=-1)
+    parser.add_argument("-t", '--start', type=int, metavar="S", help="span start", default=-1)
+    parser.add_argument("-e", '--end', type=int, metavar="S", help="span end", default=-1)
     return parser
 
 def _check_percent(w):
@@ -30,26 +32,37 @@ def _check_percent(w):
         w = w.replace("%", "\\%")
     return w
 
-
-def make_input_terms(lex, wn_sense_keys=[], penn_pos=[], lftype=[], penn_cat=[], score=-1, insert=None):
-    res = {
-            "lex": lex,
-            "wn_sense_keys": ['"{}"'.format(_check_percent(w)) for w in wn_sense_keys],
-            "penn_pos": penn_pos,
-            "lftype": ["ont::"+x.split("ont::")[-1] for x in lftype],
-            "penn_cat": penn_cat
-        }
+def make_input_terms(lex, wn_sense_keys=[], penn_pos=[], lftype=[], penn_cat=[], score=-1, start=-1, end=-1, insert=None):
+    res = []
+    if lex:
+        res.append(":lex \"%s\"" % lex)
+    if wn_sense_keys:
+        res.append(":wn-sense-keys (%s)" % " ".join(['"%s"' % s for s in wn_sense_keys]))
+    if penn_pos:
+        res.append(":penn-parts-of-speech (%s)" % " ".join(penn_pos))
+    if penn_cat:
+        res.append(":penn-cat (%s)" % " ".join(penn_cat))
+    if lftype:
+        res.append(":lftype (%s)" % " ".join(lftype))
     if score >= 0:
-        res['score'] = score
+        res.append(":score " + str(score))
+    res.append(":start " + str(start))
+    res.append(":end " + str(end))
+
+    if lftype:
+        res = "(sense %s)" % " ".join(res)
+    else:
+        res = "(pos %s)" % " ".join(res)
+
     if not insert:
         return [res]
     if type(insert) is list:
         insert.append(res)
     elif type(insert) is dict:
-        if "input_terms" not in insert:
-            insert['input_terms'] = [res]
+        if "input-tags" not in insert:
+            insert['input-tags'] = [res]
         else:
-            insert['input_terms'].append(res)
+            insert['input-tags'].append(res)
     return insert
 
 
@@ -75,7 +88,7 @@ def main():
     if infile:
         insert = json.load(open(infile))
 
-    result = make_input_terms(args.lex, args.wn_sense_keys, args.penn_pos, args.lftype, args.penn_cat, args.score, insert)
+    result = make_input_terms(args.lex, args.wn_sense_keys, args.penn_pos, args.lftype, args.penn_cat, args.score, args.start, args.end, insert)
 
     if outfile:
         if os.path.isfile(outfile) and not force:
