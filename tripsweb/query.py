@@ -120,26 +120,35 @@ def wsd(input_, tags, url=TRIPS_URL, verbose=False, as_xml=False, debug=False):
         params["input-tags"] = "({})".format(" ".join([str(t) for t in tags]))
     if as_xml:
         res = get_parse(url, params, as_xml=as_xml, verbose=verbose, debug=debug)[0]
-        pprint.pprint(res)
+        #pprint.pprint(res)
         return res
     return json.loads(get_parse(url, params, as_xml=as_xml, verbose=verbose, debug=debug)[0])
 
 class InputTag:
-    def __init__(self, lex, start, end, lftype, score):
+    def __init__(self, lex, start, end, lftype=None, score=0.0, pos=None, prefix="SENSE"):
         self.lex = lex
         self.start = start
         self.end = end
         self.lftype = lftype
+        self.pos = pos
         self.score = score
+        self.prefix = prefix
 
     def _ensure_prefix(self):
         if not self.lftype.lower().startswith("ont::"):
             self.lftype = "ont::"+self.lftype
 
     def __str__(self):
-        self._ensure_prefix()
-        return '(SENSE :LEX "{}" :START {} :END {} :LFTYPE ({}) :SCORE {} :DOMAIN-SPECIFIC-INFO (TERM :ID BOGUS))'.format(
-                self.lex, self.start, self.end, self.lftype, self.score
+        lftype = ""
+        postag = ""
+        if self.lftype and self.prefix == "SENSE":
+            self._ensure_prefix()
+            lftype = ":LFTYPE ({}) ".format(self.lftype)
+        if self.pos:
+            postag = ":penn-pos ({}) ".format(self.pos)
+
+        return '({} :LEX "{}" :START {} :END {} {}{}:SCORE {} :DOMAIN-SPECIFIC-INFO (TERM :ID SEM-HINT))'.format(
+                self.prefix, self.lex, self.start, self.end, postag, lftype, self.score
         )
 
 
